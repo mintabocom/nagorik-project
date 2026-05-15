@@ -21,5 +21,3 @@ func main() {
 	log.Println("Organization Service running on :8083")
 	r.Run(":8083")
 }
-
-}
