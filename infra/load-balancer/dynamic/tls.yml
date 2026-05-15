@@ -1,0 +1,23 @@
+# ─── Traefik Dynamic Configuration — TLS Settings ────────────────────────────
+# File: infra/load-balancer/dynamic/tls.yml
+# Production-এ SSL/TLS কনফিগারেশন
+
+tls:
+  # TLS Options (Min version, Cipher Suites)
+  options:
+    default:
+      minVersion: "VersionTLS12"
+      cipherSuites:
+        - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+        - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+        - "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+        - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+        - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305"
+        - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+      sniStrict: true
+
+  # Production Self-Signed Certificate (Dev এর জন্য)
+  # Production-এ Let's Encrypt ব্যবহার করুন (traefik.yml এ enable করুন)
+  # certificates:
+  #   - certFile: "/etc/traefik/ssl/nagoman.crt"
+  #     keyFile: "/etc/traefik/ssl/nagoman.key"

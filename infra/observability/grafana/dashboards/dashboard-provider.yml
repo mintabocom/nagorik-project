@@ -1,0 +1,16 @@
+# ─── Grafana Dashboard Provisioning ──────────────────────────────────────────
+# /etc/grafana/provisioning/dashboards/ এ রাখতে হবে
+
+apiVersion: 1
+
+providers:
+  - name: 'NagoMan Dashboards'
+    orgId: 1
+    folder: 'NagoMan'
+    folderUid: 'nagoman'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30    # ৩০ সেকেন্ডে একবার check করবে নতুন dashboard আছে কিনা
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/dashboards

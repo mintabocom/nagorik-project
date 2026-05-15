@@ -1,0 +1,59 @@
+# ─── Traefik Static Configuration ────────────────────────────────────────────
+# File: infra/load-balancer/traefik.yml
+
+# API & Dashboard
+api:
+  dashboard: true   # http://localhost:8091/dashboard/
+  insecure: false    # Production-এ false
+
+# Entry Points (Ports)
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+  websecure:
+    address: ":443"
+
+# SSL Certificate (Let's Encrypt)
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@bdnagorik.com
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
+
+# Providers
+providers:
+  docker:
+    exposedByDefault: false
+    network: nagoman_default
+
+  # Dynamic Config Files (middlewares, TLS, etc.)
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true                   # ফাইল পরিবর্তন হলে রিস্টার্ট ছাড়াই লোড হবে
+
+# Logging
+log:
+  level: INFO    # DEBUG | INFO | WARN | ERROR
+
+# Access Log (Request Logging)
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  format: json
+  filters:
+    statusCodes:
+      - "400-599"    # শুধু Error গুলো লগ হবে (কমায় স্টোরেজ)
+
+# Metrics (Prometheus) — observability/monitoring এর জন্য
+# metrics:
+#   prometheus:
+#     addEntryPointsLabels: true
+#     addServicesLabels: true

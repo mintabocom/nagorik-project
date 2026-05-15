@@ -1,0 +1,79 @@
+# ─── Traefik Dynamic Configuration — Middlewares ─────────────────────────────
+# File: infra/load-balancer/dynamic/middlewares.yml
+# এই ফাইলে সব Middleware (Reusable Rules) থাকবে
+
+http:
+  middlewares:
+
+    # ── Rate Limiting ─────────────────────────────────────────────────────────
+    # প্রতি IP থেকে প্রতি সেকেন্ডে সর্বোচ্চ ১০০ রিকোয়েস্ট, Burst ৫০
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
+
+    # ── API Rate Limiting (Strict) ────────────────────────────────────────────
+    # Auth endpoint এর জন্য কঠোর নিয়ম (Brute force প্রতিরোধ)
+    auth-rate-limit:
+      rateLimit:
+        average: 10
+        burst: 5
+        period: 1s
+
+    # ── Security Headers ──────────────────────────────────────────────────────
+    secure-headers:
+      headers:
+        sslRedirect: true
+        stsSeconds: 31536000               # 1 বছর HSTS
+        stsIncludeSubdomains: true
+        stsPreload: true
+        contentTypeNosniff: true           # MIME-type sniffing বন্ধ
+        browserXssFilter: true             # XSS ফিল্টার
+        referrerPolicy: "strict-origin"
+        customResponseHeaders:
+          X-Powered-By: ""                 # সার্ভার তথ্য লুকানো
+          Server: ""
+
+    # ── CORS ─────────────────────────────────────────────────────────────────
+    cors-headers:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        accessControlAllowHeaders:
+          - "Authorization"
+          - "Content-Type"
+          - "X-Request-ID"
+        accessControlAllowOriginList:
+          - "http://localhost:3000"         # Super Admin Panel
+          - "http://localhost:3001"         # Committee Panel
+          - "http://localhost:3002"         # Mobile App (Dev)
+          # Production-এ নিচের লাইন uncomment করুন:
+          # - "https://nagoman.com"
+          # - "https://admin.nagoman.com"
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
+    # ── Compression ───────────────────────────────────────────────────────────
+    compress:
+      compress:
+        excludedContentTypes:
+          - "text/event-stream"            # SSE compress করা যাবে না
+
+    # ── Strip Prefix (যদি /api/v1 prefix strip করতে হয়) ─────────────────────
+    strip-api-prefix:
+      stripPrefix:
+        prefixes:
+          - "/api/v1"
+        forceSlash: false
+
+    # ── Retry (Service fail হলে retry) ───────────────────────────────────────
+    retry:
+      retry:
+        attempts: 3
+        initialInterval: "100ms"

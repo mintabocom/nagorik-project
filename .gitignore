@@ -1,0 +1,27 @@
+# Binaries
+bin/
+main
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Dependencies
+node_modules/
+vendor/
+
+# Local Databases & Data
+databases/
+letsencrypt/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+
+# Environment Variables
+.env
+*.env.local
+
+# Docker
+.docker/

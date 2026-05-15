@@ -1,0 +1,24 @@
+# build stage
+FROM golang:1.23-alpine AS build
+
+WORKDIR /app
+
+COPY go.mod ./
+RUN go mod download
+
+COPY . .
+
+RUN go mod tidy
+RUN go build -o main ./cmd/server
+
+# run stage
+FROM alpine:3.18
+
+WORKDIR /app
+
+COPY --from=build /app/main .
+COPY .env .env
+
+EXPOSE 8081
+
+CMD ["./main"]

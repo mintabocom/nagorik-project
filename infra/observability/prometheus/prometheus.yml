@@ -1,0 +1,64 @@
+# ─── Prometheus Configuration ─────────────────────────────────────────────────
+# সব সার্ভিস থেকে প্রতি ১৫ সেকেন্ডে metrics সংগ্রহ করবে
+
+global:
+  scrape_interval: 15s        # প্রতি ১৫ সেকেন্ডে metrics pull
+  evaluation_interval: 15s    # Alerting rules evaluate করার interval
+  external_labels:
+    project: 'nagoman'
+    env: 'development'
+
+# ─── Scrape Jobs ───────────────────────────────────────────────────────────────
+scrape_configs:
+
+  # Traefik Metrics (Load Balancer)
+  - job_name: 'traefik'
+    static_configs:
+      - targets: ['traefik:8080']
+    metrics_path: '/metrics'
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8080']
+    metrics_path: '/metrics'
+
+  # Auth / Identity Service
+  - job_name: 'auth-service'
+    static_configs:
+      - targets: ['auth-service:8081']
+    metrics_path: '/metrics'
+
+  # Social Service
+  - job_name: 'social-service'
+    static_configs:
+      - targets: ['social-service:8082']
+    metrics_path: '/metrics'
+
+  # Org Service
+  - job_name: 'org-service'
+    static_configs:
+      - targets: ['org-service:8083']
+    metrics_path: '/metrics'
+
+  # Realtime Service
+  - job_name: 'realtime-service'
+    static_configs:
+      - targets: ['realtime-service:8081']
+    metrics_path: '/metrics'
+
+  # CockroachDB
+  - job_name: 'cockroachdb'
+    static_configs:
+      - targets: ['db:8080']
+    metrics_path: '/_status/vars'
+
+  # Redis Exporter (যদি redis_exporter যোগ করা হয়)
+  # - job_name: 'redis'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
+
+  # Prometheus নিজেই monitor করা
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

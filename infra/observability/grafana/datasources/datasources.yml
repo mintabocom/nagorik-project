@@ -1,0 +1,40 @@
+# ─── Grafana Datasources Provisioning ────────────────────────────────────────
+# Grafana স্টার্ট হলে এই datasource গুলো অটোমেটিক যোগ হয়ে যাবে
+
+apiVersion: 1
+
+datasources:
+
+  # ── Prometheus (Metrics) ────────────────────────────────────────────────────
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    url: http://prometheus:9090
+    access: proxy
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: "15s"
+      httpMethod: POST
+
+  # ── Loki (Logs) ─────────────────────────────────────────────────────────────
+  - name: Loki
+    type: loki
+    uid: loki
+    url: http://loki:3100
+    access: proxy
+    editable: false
+    jsonData:
+      derivedFields:
+        - name: "TraceID"
+          matcherRegex: "trace_id=(\\w+)"
+          url: "http://localhost:16686/trace/$${__value.raw}"  # Jaeger link
+          datasourceUid: jaeger
+
+  # ── Jaeger (Distributed Tracing) ────────────────────────────────────────────
+  - name: Jaeger
+    type: jaeger
+    uid: jaeger
+    url: http://jaeger:16686
+    access: proxy
+    editable: false

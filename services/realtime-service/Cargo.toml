@@ -1,0 +1,28 @@
+[package]
+name = "nagoman-realtime-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# অসিংক্রোনাস রানটাইম
+tokio = { version = "1.0", features = ["full"] }
+# ওয়েব এবং ওয়েব-সকেট ফ্রেমওয়ার্ক
+axum = { version = "0.7", features = ["ws"] }
+# সিরিয়ালাইজেশন (JSON প্রসেসিং)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# ওয়েব-সকেট হ্যান্ডলিং
+tokio-tungstenite = "0.21"
+# স্টেট ম্যানেজমেন্ট এবং কনকারেন্সি
+futures-util = "0.3"
+dashmap = "5.5" # হাই-পারফরম্যান্স কনকারেন্ট ম্যাপ
+uuid = { version = "1.0", features = ["v4", "serde"] }
+# টোকেন ভেরিফিকেশন
+jsonwebtoken = "9.0"
+# রেডিস ইন্টিগ্রেশন (মাল্টি-সার্ভার স্কেলিং এর জন্য)
+redis = { version = "0.24", features = ["tokio-comp", "json"] }
+# লগিং
+tracing = "0.1"
+tracing-subscriber = "0.3"
+# Dependency fix for edition2024 error
+time = "=0.3.36"

@@ -1,0 +1,47 @@
+# ─── Promtail Configuration ───────────────────────────────────────────────────
+# Promtail — Docker container লগ সংগ্রহ করে Loki-তে পাঠায়
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml    # কোন log পর্যন্ত পড়েছে track করে
+
+# ── Loki কোথায় পাঠাবে ──────────────────────────────────────────────────────
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+# ── Log Sources ─────────────────────────────────────────────────────────────
+scrape_configs:
+
+  # Docker Container Logs
+  - job_name: docker-containers
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        filters:
+          - name: label
+            values: ["logging=promtail"]   # শুধু এই label দেওয়া container এর log নেবে
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'
+      - source_labels: ['__meta_docker_compose_service']
+        target_label: 'service'
+      - source_labels: ['__meta_docker_compose_project']
+        target_label: 'project'
+    pipeline_stages:
+      # JSON লগ parse করা (Go সার্ভিসগুলো JSON লগ করে)
+      - json:
+          expressions:
+            level: level
+            msg: msg
+            trace_id: trace_id
+      - labels:
+          level:
+          trace_id:
+      - output:
+          source: msg
