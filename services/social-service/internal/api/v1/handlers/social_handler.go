@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"net/http"
-	"time"
 
 	"nagoman/social-service/cmd/db"
 	"nagoman/social-service/internal/api/v1/models"
