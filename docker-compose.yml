@@ -55,9 +55,6 @@ services:
     depends_on:
       - traefik
       - auth-service
-      - social-service
-      - org-service
-      - realtime-service
 
   # ─── Auth / Identity Service ──────────────────────────────────────────
   auth-service:
