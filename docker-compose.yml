@@ -12,6 +12,8 @@ services:
       - "80:80" # HTTP
       - "443:443" # HTTPS (Production)
       - "8091:8080" # Traefik Dashboard → http://localhost:8091/dashboard/
+    environment:
+      - DOCKER_API_VERSION=1.40
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./infra/load-balancer/traefik.yml:/etc/traefik/traefik.yml:ro
@@ -55,6 +57,9 @@ services:
     depends_on:
       - traefik
       - auth-service
+      - social-service
+      - org-service
+      - realtime-service
 
   # ─── Auth / Identity Service ──────────────────────────────────────────
   auth-service:
@@ -310,7 +315,7 @@ services:
     networks:
       - nagoman_default
     healthcheck:
-      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      test: [ "CMD-SHELL", "cqlsh -e 'describe cluster'" ]
       interval: 10s
       timeout: 5s
       retries: 5
