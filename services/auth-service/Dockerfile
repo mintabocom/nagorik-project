@@ -17,7 +17,6 @@ FROM alpine:3.18
 WORKDIR /app
 
 COPY --from=build /app/main .
-COPY .env .env
 
 EXPOSE 8081
 
